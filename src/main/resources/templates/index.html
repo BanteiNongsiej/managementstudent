@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Student Management</title>
+</head>
+<body>
+    <h1>Student Management</h1>
+
+    <form th:action="@{/save}" th:object="${Student}" method="post">
+        <input type="hidden" th:field="*{student_id}" />
+        <label>Name:</label>
+        <input type="text" th:field="*{student_name}" />
+        <label>Class:</label>
+        <input type="text" th:field="*{class_name}" />
+        <label>Course:</label>
+        <select th:field="*{course.course_id}" id="courseSelect">
+            <option value="">Select Course</option>
+            <option th:each="course : ${courses}" th:value="${course.course_id}" th:text="${course.course_name}"></option>
+        </select>
+        <label>Subject:</label>
+        <select th:field="*{subject.subject_id}" id="subjectSelect">
+            <option value="">Select Subject</option>
+        </select>
+        <button type="submit">Save</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Course</th>
+                <th>Subject</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="student : ${listofStudent}">
+                <td th:text="${student.student_id}"></td>
+                <td th:text="${student.student_name}"></td>
+                <td th:text="${student.class_name}"></td>
+                <td th:text="${student.course.course_name}"></td>
+                <td th:text="${student.subject.subject_name}"></td>
+                <td>
+                    <a th:href="@{'/edit/' + ${student.student_id}}">Edit</a>
+                    <a th:href="@{'/delete/' + ${student.student_id}}">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#courseSelect').change(function() {
+                var courseId = $(this).val();
+                if (courseId) {
+                    $.ajax({
+                        url: '/subjectList/' + courseId,
+                        type: 'GET',
+                        success: function(data) {
+                            $('#subjectSelect').empty();
+                            $('#subjectSelect').append('<option value="">Select Subject</option>');
+                            $.each(data, function(key, subject) {
+                                $('#subjectSelect').append('<option value="'+ subject.subject_id +'">'+ subject.subject_name +'</option>');
+                            });
+                        },
+                        error: function() {
+                            alert('Error retrieving subjects');
+                        }
+                    });
+                } else {
+                    $('#subjectSelect').empty();
+                    $('#subjectSelect').append('<option value="">Select Subject</option>');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
