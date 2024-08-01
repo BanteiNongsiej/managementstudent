@@ -2,79 +2,108 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Student Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Student Management</h1>
+    <div class="container mt-5">
+        <h1>Student Management</h1>
 
-    <form th:action="@{/save}" th:object="${Student}" method="post">
-        <input type="hidden" th:field="*{student_id}" />
-        <label>Name:</label>
-        <input type="text" th:field="*{student_name}" />
-        <label>Class:</label>
-        <input type="text" th:field="*{class_name}" />
-        <label>Course:</label>
-        <select th:field="*{course.course_id}" id="courseSelect">
-            <option value="">Select Course</option>
-            <option th:each="course : ${courses}" th:value="${course.course_id}" th:text="${course.course_name}"></option>
-        </select>
-        <label>Subject:</label>
-        <select th:field="*{subject.subject_id}" id="subjectSelect">
-            <option value="">Select Subject</option>
-        </select>
-        <button type="submit">Save</button>
-    </form>
+        <form th:action="@{/save}" th:object="${student}" method="post">
+            <input type="hidden" th:field="*{studentId}" />
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="studentName">Name:</label>
+                    <input required type="text" th:field="*{studentName}" class="form-control" id="studentName" />
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="className">Class:</label>
+                    <select required th:field="*{className}" class="form-control" id="className">
+                        <option value="">Select Class</option>
+                        <option value="Eleven">Eleven</option>
+                        <option value="Twelve">Twelve</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="courseSelect">Course:</label>
+                    <select required th:field="*{course}" class="form-control" id="courseSelect">
+                        <option value="">Select Course</option>
+                        <option th:each="course : ${courses}" th:value="${course.courseId}" th:text="${course.courseName}"></option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="subjectSelect">Subject:</label>
+                    <select required th:field="*{subject}" class="form-control" id="subjectSelect" disabled>
+                        <option value="">Select Subject</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a href="/create" class="btn btn-secondary">Reset</a>
+                </div>
+            </div>
+        </form>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Class</th>
-                <th>Course</th>
-                <th>Subject</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="student : ${listofStudent}">
-                <td th:text="${student.student_id}"></td>
-                <td th:text="${student.student_name}"></td>
-                <td th:text="${student.class_name}"></td>
-                <td th:text="${student.course.course_name}"></td>
-                <td th:text="${student.subject.subject_name}"></td>
-                <td>
-                    <a th:href="@{'/edit/' + ${student.student_id}}">Edit</a>
-                    <a th:href="@{'/delete/' + ${student.student_id}}">Delete</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+        <table class="table table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Class</th>
+                    <th>Course</th>
+                    <th>Subject</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="student : ${listofStudent}">
+                    <td th:text="${student.studentId}"></td>
+                    <td th:text="${student.studentName}"></td>
+                    <td th:text="${student.className}"></td>
+                    <td th:text="${student.course != null ? student.course.courseName : 'No Course'}"></td>
+                    <td th:text="${student.subject != null ? student.subject.subjectName : 'No Subject'}"></td>
+                    <td>
+                        <a th:href="@{'/edit/' + ${student.studentId}}" class="btn btn-warning btn-sm">Edit</a>
+                        <a th:href="@{'/delete/' + ${student.studentId}}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
         $(document).ready(function() {
             $('#courseSelect').change(function() {
                 var courseId = $(this).val();
                 if (courseId) {
+                    $('#subjectSelect').prop('disabled', false);
                     $.ajax({
                         url: '/subjectList/' + courseId,
                         type: 'GET',
                         success: function(data) {
                             $('#subjectSelect').empty();
                             $('#subjectSelect').append('<option value="">Select Subject</option>');
-                            $.each(data, function(key, subject) {
-                                $('#subjectSelect').append('<option value="'+ subject.subject_id +'">'+ subject.subject_name +'</option>');
+                            $.each(data, function(index, subject) {
+                                $('#subjectSelect').append('<option value="'+ subject.subjectId +'">'+ subject.subjectName +'</option>');
                             });
                         },
-                        error: function() {
-                            alert('Error retrieving subjects');
+                        error: function(xhr, status, error) {
+                            alert('Error retrieving subjects: ' + xhr.responseText);
                         }
                     });
                 } else {
                     $('#subjectSelect').empty();
                     $('#subjectSelect').append('<option value="">Select Subject</option>');
+                    $('#subjectSelect').prop('disabled', true);
                 }
             });
+
+            // Set initial state based on loaded student data
+            if ($('#courseSelect').val() !== "") {
+                $('#subjectSelect').prop('disabled', false);
+            }
         });
     </script>
 </body>

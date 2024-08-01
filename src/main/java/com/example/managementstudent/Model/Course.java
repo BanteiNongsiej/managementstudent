@@ -1,9 +1,12 @@
 package com.example.managementstudent.Model;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,51 +17,53 @@ import jakarta.persistence.OneToMany;
 
 @Entity
 public class Course {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long course_id;
-	private String course_name;
-	
-	@OneToMany(mappedBy="course")
-	private List<Student> students;
-	
-	@ManyToMany
-	@JoinTable(
-			name="course_subject",
-			joinColumns = @JoinColumn(name="course_id"),
-			inverseJoinColumns = @JoinColumn(name="subject_id")
-	)
-	private Set<Subject> subjects;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long courseId;
+    private String courseName;
+    
+    @OneToMany(mappedBy = "course")
+    private List<Student> students;
+    
+    @ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+    @JoinTable(
+        name = "course_subject",
+        joinColumns = @JoinColumn(name = "courseId"),
+        inverseJoinColumns = @JoinColumn(name = "subjectId")
+    )
+    private Set<Subject> subjects=new HashSet<>();
 
-	public Long getCourseId() {
-		return course_id;
-	}
+    // Getter and Setter methods
 
-	public void setCourseId(Long course_id) {
-		this.course_id = course_id;
-	}
+    public Long getCourseId() {
+        return courseId;
+    }
 
-	public String getCourseName() {
-		return course_name;
-	}
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
 
-	public void setCourseName(String course_name) {
-		this.course_name = course_name;
-	}
+    public String getCourseName() {
+        return courseName;
+    }
 
-	public List<Student> getStudents() {
-		return students;
-	}
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
 
-	public void setStudents(List<Student> students) {
-		this.students = students;
-	}
+    public List<Student> getStudents() {
+        return students;
+    }
 
-	public Set<Subject> getSubjects() {
-		return subjects;
-	}
+    public void setStudents(List<Student> students) {
+        this.students = students;
+    }
 
-	public void setSubjects(Set<Subject> subjects) {
-		this.subjects = subjects;
-	}
+    public Set<Subject> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(Set<Subject> subjects) {
+        this.subjects = subjects;
+    }
 }

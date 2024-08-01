@@ -1,6 +1,7 @@
 package com.example.managementstudent.Model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -9,57 +10,59 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Student {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long student_id;
-	private String student_name;
-	private String class_name; 
-	
-	@ManyToOne
-	@JoinColumn(name="course_id")
-	private Course course;
-	
-	@ManyToOne
-	@JoinColumn(name="subject_id")
-	private Subject subject;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long studentId;
+    private String studentName;
+    private String className;
 
-	public Subject getSubject() {
-		return subject;
-	}
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "course_id")
+    private Course course;
 
-	public void setSubject(Subject subject) {
-		this.subject = subject;
-	}
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
 
-	public Long getStudentId() {
-		return student_id;
-	}
+    // Getter and Setter methods
 
-	public void setStudentId(Long student_id) {
-		this.student_id = student_id;
-	}
+    public Long getStudentId() {
+        return studentId;
+    }
 
-	public String getStudentName() {
-		return student_name;
-	}
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
+    }
 
-	public void setStudentName(String student_name) {
-		this.student_name = student_name;
-	}
+    public String getStudentName() {
+        return studentName;
+    }
 
-	public String getClassName() {
-		return class_name;
-	}
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
 
-	public void setClassName(String class_name) {
-		this.class_name = class_name;
-	}
+    public String getClassName() {
+        return className;
+    }
 
-	public Course getCourse() {
-		return course;
-	}
+    public void setClassName(String className) {
+        this.className = className;
+    }
 
-	public void setCourse(Course course) {
-		this.course = course;
-	}
+    public Course getCourse() {
+        return course;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
 }

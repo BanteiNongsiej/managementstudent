@@ -32,7 +32,7 @@ public class StudentController {
     SubjectService subjectService;
     
     @PostMapping("/save")
-    public String save(@ModelAttribute("Student") Student student) {
+    public String save(@ModelAttribute("student") Student student) {
         studentService.createStudent(student);
         return "redirect:/create";
     }
@@ -43,7 +43,7 @@ public class StudentController {
         List<Course> listofCourse = courseService.getAllCourses();
         List<Student> students = studentService.getAllStudents();
         
-        model.addAttribute("Student", student);
+        model.addAttribute("student", student); // Changed from "Student" to "student"
         model.addAttribute("courses", listofCourse);
         model.addAttribute("listofStudent", students);
         
@@ -56,11 +56,13 @@ public class StudentController {
         if (op.isPresent()) {
             Course course = op.get();
             Set<Subject> subjects = course.getSubjects();
+            subjects.forEach(subject -> System.out.println("Subject: " + subject.getSubjectName())); // Logging subjects
             return ResponseEntity.ok(subjects);
         } else {
             return ResponseEntity.status(404).build();
         }
     }
+
 
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") Long id, Model model) {
@@ -69,7 +71,7 @@ public class StudentController {
             Student student = op.get();
             List<Course> listofCourse = courseService.getAllCourses();
             
-            model.addAttribute("Student", student);
+            model.addAttribute("student", student); // Changed from "Student" to "student"
             model.addAttribute("courses", listofCourse);
             
             return "index"; // Assuming there is an index.html to handle the editing
@@ -79,7 +81,7 @@ public class StudentController {
     }
 
     @PostMapping("/update/{id}")
-    public String update(@PathVariable("id") Long id, @ModelAttribute("Student") Student studentDetails) {
+    public String update(@PathVariable("id") Long id, @ModelAttribute("student") Student studentDetails) {
         studentService.updateStudent(id, studentDetails);
         return "redirect:/create";
     }
@@ -95,4 +97,12 @@ public class StudentController {
         model.addAttribute("message", "Hello, Thymeleaf!");
         return "test";
     }
+    
+    @GetMapping("/students")
+    public String getStudents(Model model) {
+        List<Student> students = studentService.getAllStudents();
+        model.addAttribute("listofStudent", students);
+        return "index";
+    }
+
 }

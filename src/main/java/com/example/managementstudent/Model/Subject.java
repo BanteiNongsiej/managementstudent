@@ -1,7 +1,9 @@
 package com.example.managementstudent.Model;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,37 +13,38 @@ import jakarta.persistence.ManyToMany;
 
 @Entity
 public class Subject {
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long subject_id;
-	private String subject_name;
-	
-	@ManyToMany(mappedBy="subjects")
-	private List<Course> course;
-	
-	public Long getSubjectId() {
-		return subject_id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long subjectId;
+    private String subjectName;
+    
+    @ManyToMany(mappedBy = "subjects")
+    @JsonIgnore // Add this annotation to ignore courses during serialization
+    private Set<Course> courses=new HashSet<>();
 
-	public void setSubjectId(Long subject_id) {
-		this.subject_id = subject_id;
-	}
+    // Getter and Setter methods
 
-	public String getSubjectName() {
-		return subject_name;
-	}
+    public Long getSubjectId() {
+        return subjectId;
+    }
 
-	public void setSubjectName(String subject_name) {
-		this.subject_name = subject_name;
-	}
+    public void setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
+    }
 
-	public List<Course> getCourse() {
-		return course;
-	}
+    public String getSubjectName() {
+        return subjectName;
+    }
 
-	public void setCourse(List<Course> course) {
-		this.course = course;
-	}
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+    }
 
-	
+    public Set<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(Set<Course> courses) {
+        this.courses = courses;
+    }
 }
